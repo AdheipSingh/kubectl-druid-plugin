@@ -1,2 +1,2 @@
 # druid-kubectl-plugin
-Druid CR compatible kubectl plugin
+Druid Operator compatible kubectl plugin
