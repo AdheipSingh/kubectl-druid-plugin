@@ -23,7 +23,7 @@ func DruidClusterList(streams genericclioptions.IOStreams) *cobra.Command {
 	var namespace string
 	cmd := &cobra.Command{
 		Use:          "list",
-		Short:        "Lists Druid Clusters in all namespaces",
+		Short:        "Lists druid CR's in all namespaces or a specific namespce",
 		SilenceUsage: true,
 		RunE: func(c *cobra.Command, args []string) error {
 			if len(args) != 0 {
@@ -34,14 +34,14 @@ func DruidClusterList(streams genericclioptions.IOStreams) *cobra.Command {
 	}
 
 	f := cmd.Flags()
-	f.StringVar(&namespace, "namespace", "", "namespace to list")
+	f.StringVar(&namespace, "namespace", "", "list druid CR in a specific namespace")
 
 	return cmd
 }
 
 func (sv *druidListCmd) run(namespace string) error {
 
-	for _, l := range Reader.ListDruids(namespace) {
+	for _, l := range reader.ListDruids(namespace) {
 		_, err := fmt.Fprintf(sv.out, "%s\n", l)
 		if err != nil {
 			return err
@@ -49,15 +49,4 @@ func (sv *druidListCmd) run(namespace string) error {
 	}
 
 	return nil
-}
-
-var rootCmd = &cobra.Command{
-	Use:          "druid",
-	Long:         "kubectl druid plugin",
-	SilenceUsage: true,
-}
-
-func NewCmdDruidPlugin(streams genericclioptions.IOStreams) *cobra.Command {
-	rootCmd.AddCommand(DruidClusterList(streams))
-	return rootCmd
 }
