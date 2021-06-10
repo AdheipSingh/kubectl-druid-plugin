@@ -9,8 +9,6 @@ import (
 	"k8s.io/klog"
 )
 
-var version = "undefined"
-
 func main() {
 	klog.InitFlags(nil)
 	flag.Set("logtostderr", "false")
@@ -18,10 +16,8 @@ func main() {
 	flag.Parse()
 
 	if err := cmd.NewCmdDruidPlugin(genericclioptions.IOStreams{In: os.Stdin, Out: os.Stdout, ErrOut: os.Stderr}).Execute(); err != nil {
-		// make sure we flush before exiting
 		klog.Flush()
 		os.Exit(1)
 	}
-	// make sure we flush before exiting
 	klog.Flush()
 }
