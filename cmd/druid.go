@@ -1,17 +1,12 @@
 package cmd
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"io"
 
-	"github.com/AdheipSingh/druid-kubectl-plugin/utils"
-	do "github.com/druid-io/druid-operator/apis/druid/v1alpha1"
 	"github.com/spf13/cobra"
 
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 )
@@ -25,6 +20,7 @@ func DruidClusterList(streams genericclioptions.IOStreams) *cobra.Command {
 		out: streams.Out,
 	}
 
+	var namespace string
 	cmd := &cobra.Command{
 		Use:          "list",
 		Short:        "Lists Druid Clusters in all namespaces",
@@ -33,42 +29,26 @@ func DruidClusterList(streams genericclioptions.IOStreams) *cobra.Command {
 			if len(args) != 0 {
 				return errors.New("this command does not accept arguments")
 			}
-			getList()
-			return druidCmdList.run()
+			return druidCmdList.run(namespace)
 		},
 	}
+
+	f := cmd.Flags()
+	f.StringVar(&namespace, "namespace", "", "namespace to list")
 
 	return cmd
 }
 
-func (sv *druidListCmd) run() error {
-	_, err := fmt.Fprintf(sv.out, "Hello from Kubernetes server with version %s!\n", getList())
-	if err != nil {
-		return err
+func (sv *druidListCmd) run(namespace string) error {
+
+	for _, l := range Reader.ListDruids(namespace) {
+		_, err := fmt.Fprintf(sv.out, "%s\n", l)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
-}
-
-func getList() string {
-	a := do.DruidList{}
-	fmt.Println(a.APIVersion)
-
-	clientset := utils.GetClientSet()
-
-	deploymentRes := schema.GroupVersionResource{Group: "druid.apache.org", Version: "v1alpha1", Resource: "druids"}
-
-	druidList, err := clientset.Resource(deploymentRes).Namespace(v1.NamespaceAll).List(context.TODO(), v1.ListOptions{})
-	if err != nil {
-		panic(err)
-	}
-
-	for _, d := range druidList.Items {
-		fmt.Printf("%s\n", d.GetName())
-	}
-
-	return ""
-
 }
 
 var rootCmd = &cobra.Command{
