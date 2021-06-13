@@ -1,4 +1,4 @@
-module github.com/AdheipSingh/druid-kubectl-plugin
+module github.com/druid-io/druid-kubectl-plugin
 
 go 1.15
 

@@ -12,6 +12,10 @@ var rootCmd = &cobra.Command{
 }
 
 func NewCmdDruidPlugin(streams genericclioptions.IOStreams) *cobra.Command {
-	rootCmd.AddCommand(DruidClusterList(streams))
+	rootCmd.AddCommand(druidCRList(streams))
+	rootCmd.AddCommand(druidCRGet(streams))
+	rootCmd.AddCommand(druidCRWriterNodeSpecReplicas(streams))
+	rootCmd.AddCommand(druidCRWriterUpdates(streams))
+	rootCmd.AddCommand(druidCRPatcher(streams))
 	return rootCmd
 }

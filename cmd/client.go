@@ -26,7 +26,7 @@ func newConfig() *rest.Config {
 
 	config, err := kubeConfig.ClientConfig()
 	if err != nil {
-		return nil
+		panic(err.Error())
 	}
 	return config
 }
